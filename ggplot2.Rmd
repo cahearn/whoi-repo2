@@ -1,28 +1,84 @@
 ---
-title: "GRaphics with gplot2"
+title: "Graphics with ggplot2"
+author: "Connor!"
+date: "10/22/2018"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Learning ggplot2
 
-## R Markdown
+We're learning ggplot2
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# install packages
 
-```{r cars}
-summary(cars)
+# install.packages("tidyverse")
+## tidyverse is a "package of packages" and contains many of the packages we will use in the workshop, including ggplot2
+
+library(tidyverse)
+
+#National Parks in California
+ca <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/ca.csv") 
+
+#Acadia National Park
+acadia <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/acadia.csv")
+
+#Southeast US National Parks
+se <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/se.csv")
+
+#2016 Visitation for all Pacific West National Parks
+visit_16 <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/visit_16.csv")
+
+#All Nationally designated sites in Massachusetts
+mass <- read_csv("https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/mass.csv")
 ```
 
-## Including Plots
+Start with the California ('ca') dataset
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+head(ca)
+View(ca)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+plot visitation to all CA NAtional Parks over time
+
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y= visitors))
+```
+
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y= visitors, color = park_name))
+```
+
+```{r}
+ggplot(data = ca) +
+  geom_point(aes(x = year, y= visitors, color = park_name)) +
+  labs(x = "Year",
+       y = "Visitation",
+       title = "California National Park Visitation") +
+  theme_bw() + # this changed to the black&white theme
+  theme(legend.title = element_blank()) # this removed the legend title
+```
+
+```{r}
+head(se)
+View(se)
+ggplot(data = se) +
+  geom_point(aes(x= year, y= visitors, color = park_name))
+  
+```
+
+```{r}
+ggplot(data = se) +
+  geom_point(aes(x= year, y= visitors, color = state)) +
+  labs(x = "When", y = "How Many", title = "                                          Parks Alive!!!") +
+  theme(axis.text.x = element_text(angle = 45, size = 14))
+
+```
+
