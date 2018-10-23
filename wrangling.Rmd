@@ -25,7 +25,7 @@ tail(gapminder, 10)
 str(gapminder)
 summary(gapminder)
 
-install.packages("skimr")
+#install.packages("skimr")
 skimr::skim(gapminder)
 
 names(gapminder) # column names
@@ -165,5 +165,94 @@ rj <- right_join(gap_2007, co2, by = "country")
 # the same as:
 lj2 <- left_join(co2, gap_2007, by = "country")
 
+```
+
+### TIDYR Session ###
+
+```{r}
+## read in gapminder data in wide format
+gap_wide <- readr::read_csv('https://raw.githubusercontent.com/OHI-Science/data-science-training/master/data/gapminder_wide.csv')
+
+```
+
+# tidyr::gather()
+
+```{r}
+gap_long <- gap_wide %>% 
+  gather(key   = obstype_year,
+         value = obs_values,
+         -continent, -country) %>% 
+  separate(col = obstype_year,
+           into = c("obstype", "year"),
+           sep = "_",
+           convert = TRUE)
+
+```
+
+# plot long data
+
+```{r}
+canada_df <- gap_long %>% 
+  filter(country == "Canada",
+         obstype == "lifeExp")
+
+ggplot(data = canada_df, aes(x = year, y =obs_values)) +
+  geom_line()
+```
+
+# plot the life expectancy of all countries in the Americas
+
+```{r}
+life_df <- gap_long %>% 
+  filter(obstype == "lifeExp",
+         continent == "Americas")
+
+ggplot(data = canada_df, aes(x = year, y = obs_values, color = country)) +
+  geom_line()
+```
+
+7.5 Exercise
+
+```{r}
+continents <- gap_long %>% 
+  filter(obstype == "lifeExp",
+          year > 1980) %>% 
+  group_by(continent, year) %>% 
+  summarize(mean_le = mean(obs_values)) %>% 
+  ungroup()
+
+#plot using ggplot
+ggplot(data = continents, aes(x = year, y = mean_le, color = continent)) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Age",
+       title = "Mean Life Expectancy") +
+  theme_bw()
+
+```
+
+# spread()
+
+```{r}
+gap_normal <- gap_long %>% 
+  spread(key = obstype,
+         value = obs_values)
+```
+
+# Exercise
+
+
+    7.6 Exercise
+
+        Convert “gap_long” all the way back to gap_wide. Hint: you’ll need to create appropriate labels for all our new variables (time*metric combinations) with the opposite of separate: tidyr::unite().
+
+        Knit the R Markdown file and sync to Github (pull, stage, commit, push)
+
+```{r}
+gap_wide_again <- gap_long %>% 
+  unite(col = var_names, obstype, year, sep = "_") %>% 
+  spread(key = var_names,
+         value = obs_values)
+  
 ```
 
